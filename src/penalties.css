@@ -1,0 +1,1 @@
+.tenant-period-summary.expanded{grid-template-columns:repeat(4,1fr)}.tenant-period-summary.expanded>div:nth-child(4){border-right:0}.tenant-period-summary.expanded>div:nth-child(n+5){border-top:1px solid var(--border)}@media(max-width:700px){.tenant-period-summary.expanded{grid-template-columns:1fr 1fr}}

@@ -1,0 +1,11 @@
+import { useEffect,useState } from 'react'
+import { AppShell,type Page } from '../shared/layout/AppShell'
+import { useAuth } from '../modules/auth/AuthProvider'
+import { AuthPage } from '../modules/auth/AuthPage'
+import { DashboardPage } from '../modules/dashboard/DashboardPage'
+import { AccountsPage } from '../modules/accounts/AccountsPage'
+import { BillingPeriodsPage } from '../modules/billing/pages/BillingPeriodsPage'
+import { BillingSummaryPage } from '../modules/billing/pages/BillingSummaryPage'
+import { MeterReadingsPage } from '../modules/meter-readings/MeterReadingsPage'
+import { TenantPortalPage } from '../modules/tenant-portal/TenantPortalPage'
+export default function App(){const {session,logout}=useAuth();const [page,setPage]=useState<Page>('dashboard'),[periodId,setPeriodId]=useState('');useEffect(()=>{const handler=()=>logout();window.addEventListener('ecobill:unauthorized',handler);return()=>window.removeEventListener('ecobill:unauthorized',handler)},[logout]);if(!session)return <AuthPage/>;const {account}=session;if(account.role==='Tenant')return <TenantPortalPage accountName={account.fullName} logout={logout}/>;const role=account.role;let content;switch(page){case'accounts':content=<AccountsPage/>;break;case'periods':content=<BillingPeriodsPage role={role} accountId={account.id} navigate={setPage} selectPeriod={setPeriodId}/>;break;case'readings':content=<MeterReadingsPage role={role} accountId={account.id}/>;break;case'summary':content=<BillingSummaryPage role={role} accountId={account.id} selectedPeriodId={periodId} selectPeriod={setPeriodId}/>;break;default:content=<DashboardPage role={role} navigate={setPage} selectPeriod={setPeriodId}/>};return <AppShell page={page} setPage={setPage} role={role} accountName={account.fullName} logout={logout}>{content}</AppShell>}

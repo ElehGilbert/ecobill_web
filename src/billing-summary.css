@@ -1,0 +1,2 @@
+.billing-breakdown-table{min-width:1450px}.paid-amount{display:block;margin-top:4px;color:#64748b;font-size:9px}
+.billing-penalty-table{min-width:1750px}.billing-metrics{grid-template-columns:repeat(4,1fr);margin-bottom:16px}.billing-metrics>div:nth-child(4){border-right:0}.billing-metrics>div:nth-child(-n+4){border-bottom:1px solid var(--border)}

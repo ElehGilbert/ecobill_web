@@ -1,0 +1,7 @@
+export type BillingPeriod={id:string;name:string;totalBillAmount:number;vatAmount?:number;startsOn:string;endsOn:string;isPublished:boolean}
+export type TenantBill={tenantProfileId:string;houseNumber:string;tenantName:string;previousReading:number;newReading:number;unitsUsed:number;amountPerUnit:number;meterRentShare:number;meterRentAmount:number;vatShare:number;sharedPenaltyShare:number;tenantPenaltyAmount:number;waterUsageAmount:number;waterBillAmount:number;hasPaid:boolean;amountPaid:number;paidOn?:string|null;balance:number}
+export type BillingSummary={billingPeriodId:string;name:string;totalBillAmount:number;meterRentAmount:number;totalMeterRent:number;vatAmount:number;totalSharedPenaltyAmount:number;totalTenantPenaltyAmount:number;billableWaterAmount:number;totalUnits:number;amountPerUnit:number;tenantBills:TenantBill[]}
+export type UpdatePaymentRequest={hasPaid:boolean;amountPaid:number;paidOn:string|null;recordedByAccountId:string}
+export type TenantBillingPeriod={billingPeriodId:string;billingPeriodName:string;status:string;startsOn:string;endsOn:string;totalBillAmount:number;meterRentAmount:number;totalMeterRent:number;vatAmount:number;totalSharedPenaltyAmount:number;totalTenantPenaltyAmount:number;billableWaterAmount:number;totalUnits:number;amountPerUnit:number;bill:TenantBill}
+export type PenaltyScope='Shared'|'Tenant'
+export type CreatePenaltyRequest={scope:PenaltyScope;tenantProfileId:string|null;amount:number;reason:string;recordedByAccountId:string}
