@@ -3,7 +3,10 @@ import { apiRequest } from '../../../shared/api/httpClient'
 import type { BillingPeriod, BillingSummary, CreatePenaltyRequest, TenantBill, TenantBillingPeriod, UpdatePaymentRequest } from '../types'
 
 export const billingApi = {
-  list: (_role?:unknown) => apiRequest<BillingPeriod[]>('/api/billing-periods'),
+  list: async (_role?:unknown) => (await apiRequest<BillingPeriod[]>('/api/billing-periods')).map(period => ({
+    ...period,
+    isPublished: period.isPublished === true || period.status === 'Published' || period.status === 1,
+  })),
   summary: (id: string, _role?:unknown) => apiRequest<BillingSummary>(`/api/billing-periods/${id}/summary`),
   create: (data: Omit<BillingPeriod, 'id' | 'isPublished'>, _role?:unknown) => apiRequest<BillingPeriod>('/api/billing-periods', { method: 'POST', body: JSON.stringify(data) }),
   publish: (id: string, _role?:unknown) => apiRequest<void>(`/api/billing-periods/${id}/publish`, { method: 'POST' }),

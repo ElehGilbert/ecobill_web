@@ -1,9 +1,11 @@
 import { clearSession, getAccessToken } from '../../modules/auth/authStorage'
 export type UserRole = 'SuperAdmin'|'Landlord'|'CareTaker'|'Tenant'
 
-// Development requests use Vite's same-origin proxy to avoid requiring local
-// backend CORS configuration. Deployments can provide an absolute API origin.
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.replace(/\/$/, '') ?? ''
+// Development uses Vite's same-origin /api proxy to avoid local CORS issues.
+// Production calls the configured API origin directly. An empty production
+// value intentionally supports same-origin frontend/backend deployments.
+const configuredApiBaseUrl = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.replace(/\/$/, '') ?? ''
+const API_BASE_URL = import.meta.env.DEV ? '' : configuredApiBaseUrl
 
 export class ApiError extends Error {
   status: number
@@ -17,6 +19,7 @@ export async function apiRequest<T>(path: string, options: RequestInit & {skipAu
   try {
     response = await fetch(`${API_BASE_URL}${path}`, {
       ...init,
+      cache: init.cache ?? 'no-store',
       headers: {
         'Content-Type': 'application/json',
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -35,5 +38,11 @@ export async function apiRequest<T>(path: string, options: RequestInit & {skipAu
     throw new ApiError(validationMessage ?? body?.detail ?? body?.message ?? body?.title ?? 'Something went wrong. Please try again.', response.status)
   }
   if (response.status === 204) return undefined as T
-  return response.json() as Promise<T>
+  const responseText = await response.text()
+  if (!responseText.trim()) return undefined as T
+  try {
+    return JSON.parse(responseText) as T
+  } catch {
+    throw new ApiError('The EcoBill API returned an invalid response.', response.status)
+  }
 }
